@@ -1,5 +1,5 @@
 # DSP
-Digital Signal 
+Digital Signal Processing
 Dr.Trần Hoàng Tùng
  - Practical Work
  - Report
