@@ -7,9 +7,9 @@ Dr.Trần Hoàng Tùng
  - No final(-Summit Report  )
 
 Labwork 1:
- 
+ link Task:  https://drive.google.com/file/d/1N731jAgR6I87ROZVNW6YCcuDdmX7Wove/view
 DSP Labwork 1 (Frequency & Time Representation):
-TODO:
+#TODO:
 	Install Python (anaconda) and some packages (scipy, matplotlib)
 	Review the tutorial if you are new to python: https://cs231n.github.io/python-numpy-tutorial/
 	Carry out the labwork, write a report
