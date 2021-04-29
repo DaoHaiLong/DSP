@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from scipy import fftpack
 import numpy as np
 
+
 Input_1kHz_15kHz =[
 
 +0.0000000000, +0.5924659585, -0.0947343455, +0.1913417162, +1.0000000000, +0.4174197128, +0.3535533906, +1.2552931065, 
@@ -55,7 +56,7 @@ plt.show()
 
      #----frequency-------
 X = fftpack.fft(Input_1kHz_15kHz)
-f_s = 100 
+f_s = 100
 freqs = fftpack.fftfreq(len(Input_1kHz_15kHz)) * f_s
 fig, ax = plt.subplots()
 ax.stem(freqs, np.abs(X))
@@ -65,9 +66,7 @@ plt.show()
 
     #------inverse-----
 y=fftpack.ifft(X)
-fs=44100
 N2=len(X)
-dt2=1/fs
 plt.title('inverse')
 plt.plot(y)
 plt.show()
