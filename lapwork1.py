@@ -132,27 +132,32 @@ ECG = [
     0.016949, 0.013559, 0.010169, 0.0067797, 0.0033898, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
 
-#------------------------------------------------------------------------------------------------
-
-def padding_array(array, length):   # zero-padding
-    x = length - len(array)
-    return np.pad(array, pad_width=(0, x), mode='constant')
-
-def set_swaptwohalves(signalandsystem):
-    midshape=len(signalandsystem)/2
-    length=len(signalandsystem)
-    new_shape=[]
-    for i in range(int(midshape),int (length)):
-        new_shape.append(signalandsystem[i])
-    for i in range(int(midshape)):
-        new_shape.append(signalandsystem[i])
-    return new_shape
-
-
+#----------------------------------------Convert to frequency (FFT)--------------------------------------------------#
 X = fftpack.fft(Input_1kHz_15kHz)
 H = fftpack.fft(Impulse_response)
 G=fftpack.fft(ECG)
+
+#------------------------------------------------------------Task-----------------------------------------------------#
+
+class support:
+    
+    def padding_array(array, length):   # zero-padding
+        x = length - len(array)
+        return np.pad(array, pad_width=(0, x), mode='constant')
+
+    def set_swaptwohalves(signalandsystem):        # swaptwohalves
+        midshape=len(signalandsystem)/2
+        length=len(signalandsystem)
+        new_shape=[]
+        for i in range(int(midshape),int (length)):
+            new_shape.append(signalandsystem[i])
+        for i in range(int(midshape)):
+            new_shape.append(signalandsystem[i])
+        return new_shape
+#------------------------------------------------------------Signal-----------------------------------------------------#
+
 class signal:
+    
     def Inputsignal():
         plt.title('time domain signal')
         plt.plot(Input_1kHz_15kHz)
@@ -160,22 +165,22 @@ class signal:
         
     def real_signal():
         plt.title('real signal')
-        plt.plot(set_swaptwohalves( np.real(X)))
+        plt.plot(support.set_swaptwohalves( np.real(X)))
         plt.show()  
          
     def imaginary():
         plt.title('imaginary signal')
-        plt.plot(set_swaptwohalves(np.imag(X)))
-        plt.show()
+        plt.plot(support.set_swaptwohalves(np.imag(X)))
+        plt.show()                                             
         
     def magnitude():
         plt.title('magnitude signal')
-        plt.plot(set_swaptwohalves( np.abs(X)))
+        plt.plot(support.set_swaptwohalves( np.abs(X)))
         plt.show()
     
     def phase():
         plt.title('phase signal')
-        plt.plot(set_swaptwohalves( np.angle(X)))
+        plt.plot( support.set_swaptwohalves( np.angle(X)))
         plt.show()  
         
     def inverse():
@@ -191,8 +196,10 @@ class signal:
         plt.title('frequency signal')
         plt.show()
    
+#------------------------------------------------------------System-----------------------------------------------------#
 
 class system:
+    
     def Inputsystem():
         plt.title('Impulse response')
         plt.plot(Impulse_response)
@@ -200,23 +207,23 @@ class system:
         
     def real_system():
         plt.title('real system')
-        plt.plot(set_swaptwohalves( np.real(H)))
+        plt.plot( support.set_swaptwohalves( np.real(H)))
         plt.show()
         
     def magnitude():
         plt.title('magnitude system')
-        plt.plot(set_swaptwohalves( np.abs(H)))
+        plt.plot( support.set_swaptwohalves( np.abs(H)))
         plt.show()
     
     def imaginary():
         plt.title('imaginary system')
-        plt.plot(set_swaptwohalves(np.imag(H)))
+        plt.plot( support.set_swaptwohalves(np.imag(H)))
         plt.show()   
         
         
     def phase():
         plt.title('phase system')
-        plt.plot(set_swaptwohalves( np.angle(H)))
+        plt.plot( support.set_swaptwohalves( np.angle(H)))
         plt.show()  
         
     def inverse():
@@ -232,9 +239,11 @@ class system:
         plt.title('frequency system')
         plt.show()
 
+#----------------------------------------Calc convo and multfreq of input and impluse------------------------------------------#
+
 def convolution():
     output=np.convolve(Impulse_response,Input_1kHz_15kHz)
-    print(len(output))
+    print("convoIn",len(output))
     plt.title('convolution')
     plt.plot(output)
     plt.show()
@@ -244,8 +253,8 @@ def multiplication_frequency():
     output=np.convolve(Impulse_response,Input_1kHz_15kHz)
     
     # set new input and impulse with padding-zero
-    paddingimpulse=padding_array(Impulse_response,len(output))
-    paddingInput=padding_array(Input_1kHz_15kHz,len(output))    
+    paddingimpulse= support.padding_array(Impulse_response,len(output))
+    paddingInput= support.padding_array(Input_1kHz_15kHz,len(output))    
        
     # Calculate H(k) = F {h(n)} and X(k) = F {x(n)}     
     new_Impulse=fftpack.fft(paddingimpulse)
@@ -256,17 +265,43 @@ def multiplication_frequency():
     freq_multf=fftpack.ifft(freq_multi)
     
     # plot
-    print(len(freq_multi))
     plt.title('frequency_multiplication')
     plt.plot(freq_multf)
+    print("multInpu",len(freq_multi))
     plt.show()
     
+#------------------------------------------------------------ECG-----------------------------------------------------#
+
 class ECGS:
     
     def plotECG():
         plt.title('ECG in time')
         plt.plot(ECG)
-        print(len(ECG))
+        plt.show()
+         
+    def real():
+        plt.title('real ECG')
+        plt.plot( support.set_swaptwohalves( np.real(G)))
+        plt.show()
+        
+    def magnitude():
+        plt.title('magnitude ECG')
+        plt.plot( support.set_swaptwohalves( np.abs(G)))
+        plt.show()
+    
+    def imaginary():
+        plt.title('imaginary ECG')
+        plt.plot( support.set_swaptwohalves(np.imag(G)))
+        plt.show()   
+          
+    def phase():
+        plt.title('phase ECG')
+        plt.plot( support.set_swaptwohalves( np.angle(G)))
+        plt.show()  
+        
+    def inverse():
+        plt.title('inverse ECG')
+        plt.plot(fftpack.ifft(G) )
         plt.show()
     
     def frequency():
@@ -279,6 +314,7 @@ class ECGS:
         
     def convolution_ECG():
         output=np.convolve(Impulse_response,ECG)
+        print("convuECG",len(output))
         plt.title('convolution_ECG')
         plt.plot(output)
         plt.show()
@@ -286,19 +322,21 @@ class ECGS:
     def multiplication_frequencyECG():
         output=np.convolve(Impulse_response,ECG)
         
-        paddingimpulse=padding_array(Impulse_response,len(output))
-        paddingECG=padding_array(ECG,len(output))
+        paddingimpulse= support.padding_array(Impulse_response,len(output))
+        paddingECG= support.padding_array(ECG,len(output))
         
         new_padding=fftpack.fft(paddingimpulse)
         new_padding_ECG=fftpack.fft(paddingECG)
         
         freq_multi=np.multiply(new_padding_ECG,new_padding)
         freq_multf=fftpack.ifft(freq_multi)
-        print(len(freq_multi))
         plt.title('frequency_multiplication_ECG')
         plt.plot(freq_multf)
+        print("multECG",len(freq_multf))
         plt.show()
-            
+        
+#------------------------------------------------------------Main-----------------------------------------------------#            
+
 if __name__ == '__main__':   
     #----------------------------signal------------------------------------  
      signal.Inputsignal()
@@ -319,14 +357,16 @@ if __name__ == '__main__':
      system.inverse()
      
      #--------------------------Convolution and mulfrequency-----------------
-
      convolution()
      multiplication_frequency()
      
     #----------------------------ECG--------------------------------
-    
      ECGS.plotECG()
      ECGS.frequency()
+     ECGS.real()
+     ECGS.imaginary()
+     ECGS.magnitude()
+     ECGS.phase()
      ECGS.convolution_ECG()
      ECGS.multiplication_frequencyECG()
      
