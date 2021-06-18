@@ -4,7 +4,16 @@ Dr.Trần Hoàng Tùng
  - Practical Work
  - Report
  - No midterm
- - No final(-Summit Report  )
+ - Final(Report)
+# Final
+   -Audio Steganography: text are embedded into audio file without loss of audio quality, 
+    and while extraction can get the embedded text back.
+    -Group 6:
+           Đào Hải Long Ba9-041
+           Đoàn Văn Chương Ba9-008
+           Đặng Thái Sơn   Ba9-053
+           Nguyễn Minh Hiếu  Ba9-020
+           Đỗ Công Hòa   Ba9-022
 
 # Labwork 1:
  - link Task:  https://drive.google.com/file/d/1N731jAgR6I87ROZVNW6YCcuDdmX7Wove/view
