@@ -8,7 +8,7 @@ Dr.Trần Hoàng Tùng
 # Final
    -Audio Steganography: text are embedded into audio file without loss of audio quality, 
     and while extraction can get the embedded text back.
-    -Group 6:
+   -Group 6:
            Đào Hải Long Ba9-041
            Đoàn Văn Chương Ba9-008
            Đặng Thái Sơn   Ba9-053
