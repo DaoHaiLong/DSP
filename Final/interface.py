@@ -144,7 +144,7 @@ class Application(Frame):
     
     def Exit(self):
         self.exit_program = messagebox.askyesno(
-            title='Restaurant Management System',
+            title='Audio Steganography Application',
             message='Confirm if you want to exit program?')
         if self.exit_program > 0:
             root.destroy()
