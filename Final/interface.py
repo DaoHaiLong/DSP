@@ -10,7 +10,7 @@ root = Tk()
 root.geometry("755x700")
 
 # create window using from in Tkinter
-class Window(Frame):
+class Application(Frame):
     # Define settings upon initialization. Here you can specify
     def __init__(self, master=None):
         # parameters that you want to send through the Frame class.
@@ -44,11 +44,11 @@ class Window(Frame):
         self.lblencode = Label(root, textvariable=self.encoded,font=('arial',15, "bold italic"))
         self.lblencode.place(x=80, y=80)
         self.encoded.set("Encoding ")
-        # select algo
-        self.optionVar = StringVar()
-        self.optionVar.set("Least Significant Bit")  # default value
+        # select method
+        self.optionencodeVar = StringVar()
+        self.optionencodeVar.set("Least Significant Bit")  # default value
 
-        self.Menu = OptionMenu(root,self.optionVar, "Least Significant Bit", "Phase Coding",)
+        self.Menu = OptionMenu(root,self.optionencodeVar, "Least Significant Bit", "Phase Coding",)
         self.Menu.place(x=10, y=150,height=30, width=245)
         # creating a button instance
         self.selectFiled = Button(self, text="Select File To Encode", command=self.selectFileEncode)
@@ -84,7 +84,7 @@ class Window(Frame):
         self.decodelabel.place(x=570, y=80)
         self.decodeVar.set("Decoding ")
 
-        # select algo
+        # select method
         self.decodeOptionsVar = StringVar()
         self.decodeOptionsVar.set("Least Significant Bit")  # default value
 
@@ -109,8 +109,6 @@ class Window(Frame):
         self.dencodeButton = Button(root,text="Decode", command=self.decode)
         self.dencodeButton.place(x=400, y=500,height=50,width=150)
 
-    def client_exit(self):
-        exit()
 
     def selectFileEncode(self):
         # file selection
@@ -126,17 +124,16 @@ class Window(Frame):
         self.locationdecode.set(root.AudioName)
 
     def encode(self):
-        # select algo to encode
-        if self.optionVar.get() == "Least Significant Bit":
+        # select method to encode
+        if self.optionencodeVar.get() == "Least Significant Bit":
             method = LSB()
         else:
             method = PhaseCoding()
         result = method.encodeAudio(self.fileSelected, self.entryText.get())
-
         self.enocdedLocation.set(result)
 
     def decode(self):
-        # select algo to decode
+        # select method to decode
         if self.decodeOptionsVar.get() == "Least Significant Bit":
             method = LSB()
         else:
@@ -154,9 +151,8 @@ class Window(Frame):
         else:
             return None
 
-
 # creation of an instance of window
-app = Window(root)
+app = Application(root)
 
 # mainloop
 root.mainloop()

@@ -20,83 +20,77 @@ class PhaseCoding(Audio):
         self.ConvertToByte(location)
 
         text = text.ljust(100, '~')
-
         # step 1 divide into chunks
         textLength = 8 * len(text)
 
-        blockLength = int(2 * 2 ** np.ceil(np.log2(2 * textLength)))
-        blockNumber = int(np.ceil(self.audioData.shape[0] / blockLength))
+        blockchannelLength = int(2 * 2 ** np.ceil(np.log2(2 * textLength)))
+        blockchannelNumber = int(np.ceil(self.audioData.shape[0] / blockchannelLength))
 
         # checks shape to change data to 1 axis
         if len(self.audioData.shape) == 1:
-            self.audioData.resize(blockNumber * blockLength, refcheck=False)
+            self.audioData.resize(blockchannelNumber * blockchannelLength, refcheck=False)
             self.audioData = self.audioData[np.newaxis]
         else:
-            self.audioData.resize((blockNumber * blockLength, self.audioData.shape[1]), refcheck=False)
+            self.audioData.resize((blockchannelNumber * blockchannelLength, self.audioData.shape[1]), refcheck=False)
             self.audioData = self.audioData.T
 
-        blocks = self.audioData[0].reshape((blockNumber, blockLength))
+        blockchannel = self.audioData[0].reshape((blockchannelNumber, blockchannelLength))
 
         # Calculate DFT using fft
-        blocks = np.fft.fft(blocks)
+        blockchannel = np.fft.fft(blockchannel)
+        
+         # create phase matrix
+        phase = np.angle(blockchannel)
+        # get phase differences
+        phaseDiff = np.diff(phase, axis=0)
 
         # calculate magnitudes
-        magnitudes = np.abs(blocks)
-
-        # create phase matrix
-        phase = np.angle(blocks)
-
-        # get phase differences
-        phaseDiffs = np.diff(phase, axis=0)
+        magnitudes = np.abs(blockchannel)
 
         # conert message to encode into binary
-        textInBinary = np.ravel([[int(y) for y in format(ord(x), "08b")] for x in text])
+        textInToBinary = np.ravel([[int(y) for y in format(ord(x), "08b")] for x in text])
 
         # Convert txt to phase differences
-        textInPi = textInBinary.copy()
-        textInPi[textInPi == 0] = -1
-        textInPi = textInPi * -np.pi / 2
-
-        blockMid = blockLength // 2
-
+        textCovertPhasePi = textInToBinary.copy()
+        textCovertPhasePi[textCovertPhasePi == 0] = -1
+        textCovertPhasePi =textCovertPhasePi * -np.pi / 2
+        # calc block channel mid
+        blockChannelMid = blockchannelLength // 2
         # do phase conversion
-        phase[0, blockMid - textLength: blockMid] = textInPi
-        phase[0, blockMid + 1: blockMid + 1 + textLength] = -textInPi[::-1]
+        phase[0, blockChannelMid - textLength: blockChannelMid] =textCovertPhasePi
+        phase[0, blockChannelMid + 1: blockChannelMid + 1 + textLength] = -textCovertPhasePi[::-1]
 
         # re compute  the ophase amtrix
         for i in range(1, len(phase)):
-            phase[i] = phase[i - 1] + phaseDiffs[i - 1]
+            phase[i] = phase[i - 1] + phaseDiff[i - 1]
 
-        # apply i-dft
-        blocks = (magnitudes * np.exp(1j * phase))
-        blocks = np.fft.ifft(blocks).real
-
+        # apply i-dft(using ifft to covert )
+        blockchannel = (magnitudes * np.exp(1j * phase))
+        blockchannel = np.fft.ifft(blockchannel).real
         # combining all block of audio again
-        self.audioData[0] = blocks.ravel().astype(np.int16)
-
+        self.audioData[0] = blockchannel.ravel().astype(np.int16)
         return self.save(self.audioData.T, location)
 
     def decodeAudio(self, location) :
-
+        
         self.ConvertToByte(location)
         textLength = 800
-        blockLength = 2 * int(2 ** np.ceil(np.log2(2 * textLength)))
-        blockMid = blockLength // 2
+        blockchannelLength = 2 * int(2 ** np.ceil(np.log2(2 * textLength)))
+        blockChannelMid = blockchannelLength // 2
 
         # get header info
         if len(self.audioData.shape) == 1:
-            x = self.audioData[:blockLength]
+            x = self.audioData[:blockchannelLength]
         else:
-            x = self.audioData[:blockLength, 0]
+            x = self.audioData[:blockchannelLength, 0]
 
         # get the phase and convert it to binary
-        secretPhases = (np.angle(np.fft.fft(x))[blockMid - textLength:blockMid]<0).astype(np.int8)
-
+        PhasesCovertToBinary = (np.angle(np.fft.fft(x))[blockChannelMid - textLength:blockChannelMid]<0).astype(np.int8)
         #  convert into characters
-        secretInIntCode = secretPhases.reshape((-1, 8)).dot(1 << np.arange(8 - 1, -1, -1))
-
+        CovertToCharacters = PhasesCovertToBinary.reshape((-1, 8)).dot(1 << np.arange(8 - 1, -1, -1))
+        
         # combine characters to original text
-        return "".join(np.char.mod("%c", secretInIntCode)).replace("~", "")
+        return "".join(np.char.mod("%c", CovertToCharacters)).replace("~", "")
 
     def save(self, audionew, location):
         # save file
